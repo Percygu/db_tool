@@ -16,12 +16,6 @@ func InitPBSyncClient(tcaplusConfig *config.TcaplusConfig, tableName string) (*t
 	var err error
 
 	pbClient := tcaplus.NewPBClient()
-	err = pbClient.SetLogCfg("../cfg/logconf.xml")
-	if err != nil {
-		fmt.Printf("excepted SetLogCfg success")
-		return nil, err
-	}
-
 	zoneList := []uint32{tcaplusConfig.ZoneID}
 	zoneTable := make(map[uint32][]string)
 	//构造Map对象存储对应表格组下所有的表
