@@ -1,0 +1,86 @@
+# 本地日志配置
+log_conf:
+  log_pattern: file # 可选stdout, stderr, file模式
+  log_path: ../../../log/logsvr/logsvr.log # 日志路径
+  #log_path: ./log/logsvr/logsvr.log # 日志路径
+  save_days: 25 # 保存天数
+  level: info # panic,fatal,error,warn,info,debug,trace
+  pid_path: ./logsvr.pid
+
+# tcaplus配置
+tcaplus_conf:
+  common_base: # 通用环境
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 3 #分区id
+  sz1: # 深圳sz1
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 2 #分区id
+  as1: # 自动化测试
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 59 #分区id
+  ts1: # 替身测试环境
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 12 #分区id
+  ce1_dev: # ce开发
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 60 #分区id
+  ce1: # ce开发
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 8 #分区id
+  chn1: # 国内环境
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 1 #分区idd
+  parametrix: # 通用环境
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 9 #分区id
+  qm1: # 测试环境1
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 11 #分区id
+  qm2: # 测试环境2
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 10 #分区id
+  mainline_drive: # 主线开车
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 47 #分区id
+  pt1: # 性能测试
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 61 #分区id
+  yc1: # 删档测试
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 5 #分区id
+  mainline_dev: # 主线开发
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 58 #分区id
+  d1: # d1环境
+    dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
+    app_id: 305 # 业务id
+    signature: 2E1F235D4D03721D # 签名
+    zone_id: 48 #分区id

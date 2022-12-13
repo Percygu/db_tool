@@ -1,0 +1,457 @@
+syntax = "proto3";
+
+option go_package = "./services;service";
+package tcaplusservice;
+import "tcaplusservice.optionv1.proto";
+
+// 通用KV存储 用来存储杂项
+message tb_key_value {
+    option(tcaplusservice.tcaplus_primary_key) = "tag,key";
+    option(tcaplusservice.tcaplus_sharding_key) = "tag";
+    option(tcaplusservice.tcaplus_index) = "index_tag(tag)";
+
+    uint32 tag = 1;
+    string key = 2[(tcaplusservice.tcaplus_size) = 128];
+    bytes value = 3[(tcaplusservice.tcaplus_size) = 102400];
+    uint64 addr = 4;
+    uint64 time = 5;
+}
+
+// 玩家数据表
+message tb_player {
+    option(tcaplusservice.tcaplus_primary_key) = "id";
+    option(tcaplusservice.tcaplus_sharding_key) = "id";
+    option(tcaplusservice.tcaplus_index) = "index_id(id)";
+
+    uint64 id = 1;
+    uint64 inst_id = 2;
+    int64 timestamp = 3;
+    int32 state = 4;
+    map<string, bytes> data = 5;
+}
+
+// 帐号在线数据
+message tb_account_online {
+    option(tcaplusservice.tcaplus_primary_key) = "uid";
+    option(tcaplusservice.tcaplus_sharding_key) = "uid";
+    option(tcaplusservice.tcaplus_index) = "index_uid(uid)";
+
+    uint64 uid = 1;
+    uint64 guid = 2;
+    uint64 lobby_server_ins = 3;
+    int64 timestamp = 4;
+    int32 ban = 5;
+    string ban_reason_str = 6[(tcaplusservice.tcaplus_size) = 512];
+    uint32 ban_time = 7;
+    string openid = 8[(tcaplusservice.tcaplus_size) = 128];
+}
+
+// 角色在线数据
+message tb_role_online {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    uint64 lobby_server_ins = 2;
+    int64 timestamp = 3;
+}
+
+// 玩家帐号信息
+message tb_openid {
+    option(tcaplusservice.tcaplus_primary_key) = "key";
+
+    string key = 1[(tcaplusservice.tcaplus_size) = 128];
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// 角色简要信息
+message tb_role_brief_info {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// 玩家昵称
+message tb_gamename {
+    option(tcaplusservice.tcaplus_primary_key) = "gamename";
+
+    string gamename = 1[(tcaplusservice.tcaplus_size) = 20];
+    uint64 guid = 2;
+}
+
+// 在线统计表
+message tb_role_online_cnt {
+    option(tcaplusservice.tcaplus_primary_key) = "time_key,game_appid,gsid,world_id";
+
+    uint32 time_key = 1;                // 时间点
+    string game_appid = 2[(tcaplusservice.tcaplus_size) = 32];
+    string gsid = 3[(tcaplusservice.tcaplus_size) = 32];
+    string world_id = 4[(tcaplusservice.tcaplus_size) = 32];
+    uint32 online_cnt_ios = 5;          // ISO在线人数
+    uint32 online_cnt_android = 6;      // android在线人数
+    uint32 register_num = 7;            // 注册人数
+}
+
+// 白名单
+message tb_white_list {
+    option(tcaplusservice.tcaplus_primary_key) = "openid";
+
+    string openid = 1[(tcaplusservice.tcaplus_size) = 64];
+    int32 level = 2;    // 白名单等级
+}
+
+
+
+// DB生成全局ID
+message tb_global_id {
+    option(tcaplusservice.tcaplus_primary_key) = "type";
+    option(tcaplusservice.tcaplus_sharding_key) = "type";
+    option(tcaplusservice.tcaplus_index) = "index_type(type)";
+
+    uint32 type = 1;
+    uint64 id_generator = 2;
+}
+
+
+// 注册限制为了pr测试时，key=0表示全区的限制，key> 0表示每天的限制
+message tb_reg_cnt {
+    option(tcaplusservice.tcaplus_primary_key) = "key";
+    option(tcaplusservice.tcaplus_sharding_key) = "key";
+    option(tcaplusservice.tcaplus_index) = "index_type(key)";
+
+    uint32 key = 1;//0表示总注册人数，其它表示按天
+    uint64 reg_cnt = 2;//总注册人数
+}
+
+// 主要是为了解决bug的及时回写表
+message tb_role_ext {
+    option(tcaplusservice.tcaplus_primary_key) = "guid,tag";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    string tag = 2[(tcaplusservice.tcaplus_size) = 1024];
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// 邮件补偿
+message tb_mail_compensation {
+    option(tcaplusservice.tcaplus_primary_key) = "guid,type";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    uint64 type = 2;    // MailConf里的邮件id
+    string data = 3[(tcaplusservice.tcaplus_size) = 10240]; // 附件, text格式的附件内容
+}
+
+// 活动通用存储
+message tb_activity {
+    option(tcaplusservice.tcaplus_primary_key) = "guid, activity_id";
+    option(tcaplusservice.tcaplus_sharding_key) = "activity_id";
+    option(tcaplusservice.tcaplus_index) = "index_activity_id(activity_id)";
+
+    uint64 guid = 1;
+    uint32 activity_id = 2;
+    string proto_type = 3[(tcaplusservice.tcaplus_size) = 128]; // 所存数据的类型
+    bytes data = 4[(tcaplusservice.tcaplus_size) = 102400]; // 活动数据
+    uint64 time = 5;    // 更新时间
+    uint32 conf_version = 6;    // 配置版本号
+}
+
+// 最后一局比赛的结算包
+message tb_last_game_result {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    uint64 game_id = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// 最后一局比赛的任务奖励包
+message tb_last_game_task {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    uint64 game_id = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+
+
+// 角色统计数据
+message tb_player_statistic {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 102400];
+    int64 register_time = 3;
+}
+
+// group数据
+message tb_group {
+    option(tcaplusservice.tcaplus_primary_key) = "id";
+    option(tcaplusservice.tcaplus_sharding_key) = "id";
+    option(tcaplusservice.tcaplus_index) = "index_id(id)";
+
+    uint64 id = 1;
+    uint64 inst_id = 2;
+    int64 timestamp = 3;
+    int32 state = 4;
+    bytes data = 5[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// room数据
+message tb_room {
+    option(tcaplusservice.tcaplus_primary_key) = "id";
+    option(tcaplusservice.tcaplus_sharding_key) = "id";
+    option(tcaplusservice.tcaplus_index) = "index_id(id)";
+
+    uint64 id = 1;
+    uint64 inst_id = 2;
+    int64 timestamp = 3;
+    int32 state = 4;
+    bytes data = 5[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// 聊天
+message tb_chat_list {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=100";
+
+    uint64 guid = 1;
+    uint64 fuid = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 256];
+}
+
+// 角色好友信息
+message tb_friend_list {
+    option(tcaplusservice.tcaplus_primary_key) = "guid,type";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=300";
+
+    uint64 guid = 1;
+    int32 type = 2; // 类型:1-平台好友,2-游戏好友,3-好友申请,4-黑名单,5-被黑名单
+    uint64 fuid = 3;
+    bytes data = 4[(tcaplusservice.tcaplus_size) = 128];
+}
+
+// 角色邮件信息
+message tb_mail_list {
+    option(tcaplusservice.tcaplus_primary_key) = "guid,type";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=100";
+
+    uint64 guid = 1;
+    int32 type = 2; // 类型:1-赠送金币,2-礼物,3-请求,4-赠送,5-感谢,6-系统邮件
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 1024];
+}
+
+// 玩家订单数据
+message tb_player_order {
+    option(tcaplusservice.tcaplus_primary_key) = "guid,order_id";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_tag(guid)";
+
+    uint64 guid = 1;
+    uint64 order_id = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// 历史战绩简要数据
+message tb_battle_record_brief {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=200";
+
+    uint64 guid = 1;
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 1024];
+}
+
+// 历史战绩详细数据
+message tb_battle_record {
+    option(tcaplusservice.tcaplus_primary_key) = "guid,game_id";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    uint64 game_id = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+//历史战绩回合信息
+message tb_battle_round_record {
+    option(tcaplusservice.tcaplus_primary_key) = "game_id,round_id";
+    option(tcaplusservice.tcaplus_sharding_key) = "game_id";
+    option(tcaplusservice.tcaplus_index) = "index_game_id(game_id)";
+
+    uint64 game_id = 1;
+    uint32 round_id = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 102400];
+}
+
+// 信誉分变化记录
+message tb_credit_record {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=50";
+
+    uint64 guid = 1;
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 1024];
+}
+
+message tb_report_credit {
+    option(tcaplusservice.tcaplus_primary_key) = "guid,game_id";
+    option(tcaplusservice.tcaplus_sharding_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+
+    uint64 guid = 1;
+    uint64 game_id = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 10240];
+}
+
+// 信誉等级经验变化记录
+message tb_credit_exp_record {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=50";
+
+    uint64 guid = 1;
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 1024];
+}
+
+message tb_guild {
+    option(tcaplusservice.tcaplus_primary_key) = "id";
+    option(tcaplusservice.tcaplus_sharding_key) = "id";
+    option(tcaplusservice.tcaplus_index) = "index_id(id)";
+
+    //页面申请全局索引 match_index和score和leader_online
+    uint64 	id = 1;
+    int32   match_index = 2;
+    int32   score = 3;
+    bool    leader_online = 4;
+    uint64 	inst_id = 5;
+    int64 	timestamp = 6;
+    int32 	state = 7;
+    string  guildname = 8[(tcaplusservice.tcaplus_size) = 30];
+    bytes 	data = 9[(tcaplusservice.tcaplus_size) = 102400];
+    int32   member_num= 10;
+}
+
+// 战队名称
+message tb_guildname {
+    option(tcaplusservice.tcaplus_primary_key) = "guildname";
+
+    string guildname = 1[(tcaplusservice.tcaplus_size) = 30];
+    uint64 guild_id = 2;
+}
+
+// 战队数据:申请入队列表
+message tb_guild_apply_list {
+    option(tcaplusservice.tcaplus_primary_key) = "guild_id";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=50";
+
+    uint64 guild_id = 1;
+    uint64 guid = 2; // 申请人uid
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 1024];   //申请人数据
+}
+
+// 个人数据:玩家被邀请列表
+message tb_player_guild_invite_list {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=50";
+
+    uint64 guid = 1;
+    uint64 guild_id = 2; // 邀请战队id
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 1024];   //战队数据
+}
+
+// 个人数据:玩家拒绝战队列表
+message tb_player_guild_refuse_list {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=50";
+
+    uint64 guid = 1;
+    uint64 guild_id = 2; // 拒绝的战队id
+    uint64 utime = 3; // 失效时间
+}
+
+// 玩家统计指标
+message tb_player_tag {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";               // 主键
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";         // 主键索引
+   
+	uint64 guid = 1;                                                   // 用户guid
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 102400];            // player_statistics_info ,具体的统计数据，通过结构序列化
+}
+
+// 玩家结果标签
+message tb_player_tag_result {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";
+    option(tcaplusservice.tcaplus_index) = "index_guid(guid)";
+   
+    uint64 guid = 1;
+    uint32 is_day_player = 2;
+    uint32 is_night_player = 3;
+    uint32 is_workday_player = 4;
+    uint32 is_weekend_player = 5;
+    uint32 match_type = 6;
+    uint32 voice_type = 7;
+	uint32 rank_hide_score = 8;
+	uint32 other_hide_score = 9;
+    uint32 is_online = 10;
+    int64 ranked_level = 11;         
+}
+
+//好友间共享的信息列表
+message tb_friend_share {
+    option(tcaplusservice.tcaplus_primary_key) = "little_guid, large_guid";  //较小的guid在前，较大的guid在后
+    option(tcaplusservice.tcaplus_sharding_key) = "little_guid";
+    option(tcaplusservice.tcaplus_index) = "index_tag(little_guid)";
+
+    uint64 little_guid = 1;
+    uint64 large_guid = 2;
+    bytes data = 3[(tcaplusservice.tcaplus_size) = 10240];   //共享的信息
+}
+
+
+// 单局相关数据 
+message tb_game_info {
+    option(tcaplusservice.tcaplus_primary_key) = "game_id";               // 主键
+    option(tcaplusservice.tcaplus_index) = "index_guid(game_id)";         // 主键索引
+   
+	uint64 game_id = 1;                                                   // 用户guid
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 102400];               //记录结算的10个人的数据，最开始包含精彩集锦
+}
+
+
+// 精彩集锦相关数据 
+message tb_excellent_moment_list {
+    option(tcaplusservice.tcaplus_primary_key) = "guid";               // 主键
+    option(tcaplusservice.tcaplus_customattr) = "TableType=LIST;ListNum=50";
+   
+	uint64 guid = 1;                                                   // 用户guid
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 1024];           
+}
+
+
+// ID映射表，
+message tb_group_short_info {
+    option(tcaplusservice.tcaplus_primary_key) = "short_id";               // 主键
+    option(tcaplusservice.tcaplus_index) = "index_guid(short_id)";         // 主键索引
+   
+	uint64 short_id = 1;                                
+    uint64 group_id = 2;
+}
+
+//触发队友消极比赛补偿表
+message tb_negative_compensate_record {
+    option(tcaplusservice.tcaplus_primary_key) = "game_id";
+    option(tcaplusservice.tcaplus_index) = "index_guid(game_id)";
+
+    uint64 game_id = 1;
+    bytes data = 2[(tcaplusservice.tcaplus_size) = 10240];
+}
