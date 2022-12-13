@@ -9,15 +9,14 @@ import (
 )
 
 var (
-	pbclient *tcaplus.PBClient
-	once     sync.Once
+	once sync.Once
 )
 
 func InitPBSyncClient(tcaplusConfig *config.TcaplusConfig, tableName string) (*tcaplus.PBClient, error) {
 	var err error
 
-	pbclient = tcaplus.NewPBClient()
-	err = pbclient.SetLogCfg("../cfg/logconf.xml")
+	pbClient := tcaplus.NewPBClient()
+	err = pbClient.SetLogCfg("../cfg/logconf.xml")
 	if err != nil {
 		fmt.Printf("excepted SetLogCfg success")
 		return nil, err
@@ -28,10 +27,10 @@ func InitPBSyncClient(tcaplusConfig *config.TcaplusConfig, tableName string) (*t
 	//构造Map对象存储对应表格组下所有的表
 	zoneTable[tcaplusConfig.ZoneID] = []string{tableName}
 
-	err = pbclient.Dial(tcaplusConfig.APPID, zoneList, tcaplusConfig.DirUrl, tcaplusConfig.Signature, 30, zoneTable)
+	err = pbClient.Dial(tcaplusConfig.APPID, zoneList, tcaplusConfig.DirUrl, tcaplusConfig.Signature, 30, zoneTable)
 	if err != nil {
 		fmt.Printf("excepted dial success, %s", err.Error())
 		return nil, err
 	}
-	return pbclient, nil
+	return pbClient, nil
 }

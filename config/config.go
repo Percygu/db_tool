@@ -1,9 +1,7 @@
 package config
 
 import (
-	log "github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
-	"path"
 	"sync"
 )
 
@@ -41,13 +39,13 @@ func GetGlobalConf() *GlobalConfig {
 }
 
 func readConf() {
-	viper.SetConfigName("log")
+	viper.SetConfigName("config")
 	viper.SetConfigType("yaml")
-	fileNameAll := path.Base(configFile)
-	log.Debugf("fileNameAll ==== %s\n", fileNameAll)
-	filePrefix := configFile[0 : len(configFile)-len(fileNameAll)]
-	log.Debugf("filePrefix ==== %s\n", filePrefix)
-	viper.AddConfigPath(filePrefix)
+	//fileNameAll := path.Base(configFile)
+	//log.Debugf("fileNameAll ==== %s\n", fileNameAll)
+	//filePrefix := configFile[0 : len(configFile)-len(fileNameAll)]
+	//log.Debugf("filePrefix ==== %s\n", filePrefix)
+	//viper.AddConfigPath(filePrefix)
 	viper.AddConfigPath("./conf")
 	err := viper.ReadInConfig()
 	if err != nil {

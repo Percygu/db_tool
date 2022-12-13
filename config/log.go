@@ -39,10 +39,11 @@ func (c *logFormatter) Format(entry *log.Entry) ([]byte, error) {
 	return b.Bytes(), nil
 }
 
-// InitLog 初始化日志
+// InitConfig 初始化日志
 func InitConfig() {
 	globalConf := GetGlobalConf()
 	// 设置日志级别
+	fmt.Printf("globalConf = %v\n", globalConf)
 	level, err := log.ParseLevel(globalConf.LogConf.Level)
 	if err != nil {
 		panic("log level parse err:" + err.Error())

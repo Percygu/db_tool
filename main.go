@@ -1,11 +1,22 @@
-package db_tool
+package main
 
 import (
+	"db_tool/sync"
 	"flag"
-	"runtime"
+	"fmt"
 
 	"db_tool/config"
 )
+
+var (
+	nameSpace string
+	tableName string
+)
+
+func init() {
+	flag.StringVar(&nameSpace, "name_space", "mainline_dev", "name_space")
+	flag.StringVar(&tableName, "table_name", "tb_player", "table_name")
+}
 
 // Init 初始化配置
 func Init() {
@@ -15,5 +26,9 @@ func Init() {
 func main() {
 	flag.Parse()
 	Init()
-	runtime.GOMAXPROCS(config.GetGlobalConf().LogSvrConfig.CpuNum) // 设置程序运行核数
+	tcaplusConf := config.GetGlobalConf().TcaplusConf
+	tf := tcaplusConf["mainline_dev"]
+	fmt.Printf("tf: %v", tf)
+
+	sync.Count(nameSpace, tableName)
 }

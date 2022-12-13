@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option go_package = "./services;service";
+option go_package = "./tcaplusservice;tcaplusservice";
 package tcaplusservice;
 import "tcaplusservice.optionv1.proto";
 
