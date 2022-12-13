@@ -58,7 +58,7 @@ func Count(nameSpace, tableName string) error {
 		return err
 	}
 	defer client.Close()
-	count, err := client.GetTableCount("game_players")
+	count, err := client.GetTableCount(tableName)
 	if err != nil {
 		fmt.Println(err.Error())
 		return err
