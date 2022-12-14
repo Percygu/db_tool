@@ -133,7 +133,7 @@ func CopyRecord(nameSpaceFrom, nameSpaceTo, tableName string, zoneID uint32) err
 	}
 	defer setClient.Close()
 
-	if err := setClient.DoBatchInsert(msgs, nil, zoneID); err != nil {
+	if err := setClient.DoBatchInsert(msgs, nil); err != nil {
 		log.Errorf("CopyRecord|%v", err)
 		return err
 	}

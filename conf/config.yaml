@@ -13,7 +13,7 @@ tcaplus_conf:
     dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
     app_id: 305 # 业务id
     signature: 2E1F235D4D03721D # 签名
-    zone_id: 3 #分区id
+    zone_id: 62 #分区id
   sz1: # 深圳sz1
     dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
     app_id: 305 # 业务id
@@ -24,7 +24,7 @@ tcaplus_conf:
     app_id: 305 # 业务id
     signature: 2E1F235D4D03721D # 签名
     zone_id: 59 #分区id
-  ts1: # 替身测试环境
+  ts1: # 提审测试环境
     dir_url: tcp://set18.tcapdir.idc.tcaplus.db:9999  # "tcp://x.x.x.x:xxxx"
     app_id: 305 # 业务id
     signature: 2E1F235D4D03721D # 签名
