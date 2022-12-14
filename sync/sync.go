@@ -4,13 +4,16 @@ import (
 	"db_tool/config"
 	"db_tool/tools"
 	"fmt"
-	log "github.com/sirupsen/logrus"
-	"google.golang.org/protobuf/proto"
 	"time"
 
 	"db_tool/table/tcaplusservice"
+	log "github.com/sirupsen/logrus"
 	tcaplus "github.com/tencentyun/tcaplusdb-go-sdk/pb"
+	"google.golang.org/protobuf/proto"
 )
+
+//声明一个TcaplusDB连接客户端
+var client *tcaplus.PBClient
 
 func TableMap() map[string]proto.Message {
 	return map[string]proto.Message{
@@ -57,31 +60,22 @@ func TableMap() map[string]proto.Message {
 	}
 }
 
-//声明一个TcaplusDB连接客户端
-var client *tcaplus.PBClient
-
 func GetPbClient(nameSpace, tableName string) (*tcaplus.PBClient, error) {
 	if _, ok := config.GetGlobalConf().TcaplusConf[nameSpace]; !ok {
-		log.Errorf("name_space not invalid")
+		log.Errorf("GetPbClient|name_space not invalid")
 		return nil, fmt.Errorf("name_space not invalid")
 	}
 	tcaplusConf := config.GetGlobalConf().TcaplusConf[nameSpace]
 	client, err := tools.InitPBSyncClient(tcaplusConf, tableName)
 	if err != nil {
-		log.Errorf("GetPbClient err: %v", err)
+		log.Errorf("GetPbClient|%v", err)
 		return nil, err
 	}
 	return client, nil
 }
 
-// 遍历记录
-func Traverse(nameSpace, tableName string) error {
-	client, err := GetPbClient(nameSpace, tableName)
-	if err != nil {
-		log.Errorf("traverse err:%v", err)
-		return err
-	}
-	defer client.Close()
+// Traverse 遍历记录
+func Traverse(client *tcaplus.PBClient, tableName string) ([]proto.Message, error) {
 	//record := &tcaplusservice.TbPlayer{}
 	record := TableMap()[tableName]
 	// 遍历时间可能比较长超时时间设长一些
@@ -89,12 +83,12 @@ func Traverse(nameSpace, tableName string) error {
 	msgs, err := client.Traverse(record)
 	if err != nil {
 		fmt.Println(err.Error())
-		return err
+		return nil, err
 	}
 
 	fmt.Println("Case Traverse:")
 	fmt.Printf("message:%+v\n", msgs)
-	return nil
+	return msgs, nil
 }
 
 // Count 获取表记录总数
@@ -117,12 +111,31 @@ func Count(nameSpace, tableName string) error {
 	return nil
 }
 
-func CopyRecord(nameSpaceFrom, nameSpaceTo, tableName string) error {
+// CopyRecord 拷贝环境数据
+func CopyRecord(nameSpaceFrom, nameSpaceTo, tableName string, zoneID uint32) error {
 	getClient, err := GetPbClient(nameSpaceFrom, tableName)
 	if err != nil {
-		log.Errorf("traverse err:%v", err)
+		log.Errorf("CopyRecord|:%v", err)
 		return err
 	}
 	defer getClient.Close()
+
+	msgs, err := Traverse(getClient, tableName)
+	if err != nil {
+		log.Errorf("CopyRecord|%v", err)
+		return err
+	}
+
+	setClient, err := GetPbClient(nameSpaceTo, tableName)
+	if err != nil {
+		log.Errorf("CopyRecord|%v", err)
+		return err
+	}
+	defer setClient.Close()
+
+	if err := setClient.DoBatchInsert(msgs, nil, zoneID); err != nil {
+		log.Errorf("CopyRecord|%v", err)
+		return err
+	}
 	return nil
 }

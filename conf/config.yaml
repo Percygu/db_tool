@@ -1,7 +1,7 @@
 # 本地日志配置
 log_conf:
   log_pattern: file # 可选stdout, stderr, file模式
-  log_path: ../../../log/logsvr/logsvr.log # 日志路径
+  log_path: ./dbtool.log # 日志路径
   #log_path: ./log/logsvr/logsvr.log # 日志路径
   save_days: 25 # 保存天数
   level: info # panic,fatal,error,warn,info,debug,trace

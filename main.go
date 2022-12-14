@@ -9,12 +9,14 @@ import (
 )
 
 var (
-	nameSpace string
-	tableName string
+	nameSpaceFrom string
+	nameSpaceTo   string
+	tableName     string
 )
 
 func init() {
-	flag.StringVar(&nameSpace, "name_space", "mainline_dev", "name_space")
+	flag.StringVar(&nameSpaceFrom, "name_space_from", "mainline_dev", "name_space_from")
+	flag.StringVar(&nameSpaceTo, "name_space_to", "mainline_dev", "name_space_to")
 	flag.StringVar(&tableName, "table_name", "tb_player", "table_name")
 }
 
@@ -30,6 +32,6 @@ func main() {
 	tf := tcaplusConf["mainline_dev"]
 	fmt.Printf("tf: %v", tf)
 
-	sync.Count(nameSpace, tableName)
-	sync.Traverse(nameSpace, tableName)
+	sync.Count(nameSpaceFrom, tableName)
+	sync.CopyRecord(nameSpaceFrom, nameSpaceTo, tableName, tf.ZoneID)
 }
