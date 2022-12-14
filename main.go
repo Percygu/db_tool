@@ -31,4 +31,5 @@ func main() {
 	fmt.Printf("tf: %v", tf)
 
 	sync.Count(nameSpace, tableName)
+	sync.Traverse(nameSpace, tableName)
 }
